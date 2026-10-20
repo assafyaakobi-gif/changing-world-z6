@@ -61,6 +61,12 @@
   .row button { flex: 1 1 200px; }
   .small { font-size: 15px; color: var(--muted); }
   .hidden { display: none; }
+  .topnav { display: flex; gap: 8px; margin-top: 8px; }
+  .topnav .mini { min-height: 44px; padding: 6px 12px; font-size: 15px; border-color: var(--line); color: var(--muted); }
+  .card.game { border-inline-start-color: #c2410c; }
+  .game .tag { background: #fff1e6; color: #9a3412; }
+  .reveal { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: #fff1e6; font-weight: 600; }
+  a.ext { color: var(--explain); font-weight: 700; }
   pre.summary { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 16px; max-height: 300px; overflow: auto; }
 </style>
 </head>
@@ -69,6 +75,10 @@
   <header class="top">
     <p class="stepname" id="stepname"></p>
     <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+    <nav class="topnav" aria-label="ניווט">
+      <button type="button" class="mini" id="navhome">⌂ עמוד ראשון</button>
+      <button type="button" class="mini" id="navreload">↻ רענון הדף</button>
+    </nav>
   </header>
   <div id="app" aria-live="polite"></div>
 </main>
@@ -81,6 +91,7 @@ const CONCEPTS = ["עולם משתנה", "קצב השינוי", "נוף טבעי
 const STEPS = [
   {
     title: "חזרה: המפה שלנו",
+    guess: { q: "נחשו: כמה פעמים אפריקה גדולה מגרינלנד?", options: ["הן בערך באותו גודל", "פי 3", "פי 14", "גרינלנד גדולה יותר"], correct: 2, reveal: "פי 14! אפריקה ענקית, אבל במפה הרגילה היא נראית כמעט כמו גרינלנד. בואו נבין למה." },
     explain: `<p>בשיעור הקודם ראינו שמפת העולם המוכרת, <b>מפת מרקטור</b>, מעוותת גדלים.</p>
       <p>ככל שמתרחקים מקו המשווה ומתקרבים לקטבים, ארצות נראות גדולות יותר ממה שהן באמת.</p>
       <p>מפה שוויונית יותר, כמו <b>Equal Earth</b>, מראה את הגדלים האמיתיים.</p>
@@ -99,6 +110,7 @@ const STEPS = [
   },
   {
     title: "מפות משתנות, כי העולם משתנה",
+    guess: { q: "חידה: אני משתנה כל הזמן, אבל במפה אני תקוע ברגע אחד. מה אני?", options: ["המצפן", "העולם", "קו המשווה"], correct: 1, reveal: "העולם! מפה היא כמו תמונה: ברגע שצילמו אותה, העולם כבר ממשיך להשתנות." },
     explain: `<p>מפה היא תמונה של העולם ברגע מסוים. אבל העולם לא עומד במקום.</p>
       <p>ערים גדלות, כבישים ורכבות נבנים, חופים משתנים, ויש לנו דרכים חדשות לראות את העולם. לכן גם המפות משתנות.</p>
       <p><b>עולם משתנה</b>: שינויים בנוף, באנשים, בטכנולוגיה ובסביבה.</p>
@@ -117,6 +129,7 @@ const STEPS = [
   },
   {
     title: "נוף טבעי ונוף אנושי",
+    guess: { q: "נחשו: מה היה ב-1909 במקום שבו נמצא היום מרכז תל אביב?", options: ["בתים ורחובות", "חולות", "יער", "אגם"], correct: 1, reveal: "חולות! במקום שבו היום יש רחובות, חנויות ומגדלים, היו פעם בעיקר דיונות של חול." },
     explain: `<p><b>נוף טבעי</b>: מה שהטבע יצר. למשל ים, חול, נהר, גבעות.</p>
       <p><b>נוף אנושי</b>: מה שבני אדם בנו או שינו. למשל בתים, כבישים, נמל, פארק.</p>
       <p>לפני 1909, במקום שבו נמצא היום מרכז תל אביב, היו בעיקר <b>חולות</b>. יפו כבר הייתה עיר נמל עתיקה.</p>
@@ -135,6 +148,7 @@ const STEPS = [
   },
   {
     title: "ציר הזמן של תל אביב-יפו",
+    guess: { q: "נחשו: בן כמה נמל יפו?", options: ["בערך 100 שנה", "בערך 500 שנה", "אלפי שנים"], correct: 2, reveal: "אלפי שנים! יפו היא אחת מערי הנמל העתיקות בעולם. תל אביב צעירה ממנה בהרבה." },
     explain: `<p><b>יפו</b> היא אחת מערי הנמל העתיקות בעולם. אנשים חיו בה וסחרו בנמל שלה כבר לפני אלפי שנים.</p>
       <p>ב-<b>1909</b> קבוצת משפחות ייסדה שכונה חדשה על החולות שמצפון ליפו. השכונה גדלה והפכה ל<b>תל אביב</b>.</p>
       <p>ב-<b>1950</b> תל אביב ויפו <b>התאחדו לעיר אחת</b>: תל אביב-יפו.</p>
@@ -154,6 +168,7 @@ const STEPS = [
   },
   {
     title: "המחיר של השינוי, והאחריות שלנו",
+    guess: { q: "חידה: אני עוזר לכם להגיע מהר לכל מקום, אבל אני גם ממלא את האוויר בעשן. מה אני?", options: ["רכבת קלה", "אופניים", "מכונית"], correct: 2, reveal: "מכונית! היא נוחה, אבל יש לה מחיר. לכל שינוי יש גם מחיר. זה מה שנבדוק עכשיו." },
     explain: `<p>לשינויים יש יתרונות: יותר בתים, יותר עבודה, תחבורה מהירה יותר. אבל לכל שינוי יש גם <b>מחיר</b>, לסביבה ולאנשים.</p>
       <p>למשל: יותר מכוניות גורמות לפקקים ולזיהום אוויר. במשך שנים הזרימו לירקון מים מזוהמים, והנהר נפגע מאוד.</p>
       <p><b>אחריות סביבתית</b>: לחשוב על המחיר ולנסות לתקן או למנוע אותו. למשל לשקם את הירקון, לבנות רכבת ושבילי אופניים, ולשמור על החוף.</p>`,
@@ -171,6 +186,7 @@ const STEPS = [
   },
   {
     title: "התוצר שלי: העיר שלי בעולם משתנה",
+    guess: { q: "נחשו: איזה חלק מהאנשים בעולם גר היום בערים?", options: ["בערך 2 מתוך 10", "קצת יותר מחצי", "9 מתוך 10"], correct: 1, reveal: "קצת יותר מחצי! לפי האו\"ם, ב-1950 רק בערך שליש מהאנשים גרו בערים. היום כבר יותר מחצי. העולם באמת משתנה, וגם אתם חלק מזה." },
     explain: `<p>זה הצעד האחרון במסלול. עכשיו אתם מחברים את כל מה שלמדתם.</p>
       <p>כתבו 3–4 משפטים על תל אביב-יפו כעיר בעולם משתנה. השתמשו בלפחות 2 מושגים מהרשימה, ותנו דוגמה אחת מהעיר.</p>
       <div class="chips">${CONCEPTS.map(c => `<span class="chip">${c}</span>`).join("")}</div>
@@ -191,8 +207,8 @@ const CHALLENGES = [
 ];
 
 let state = load() || fresh();
-state.level = state.level || {}; state.adapt = state.adapt || {};
-function fresh() { return { screen: "start", step: 0, answers: {}, attempts: {}, solved: {}, times: {}, challenges: {}, level: {}, adapt: {}, started: null }; }
+state.level = state.level || {}; state.adapt = state.adapt || {}; state.guess = state.guess || {}; state.games = state.games || {};
+function fresh() { return { screen: "start", step: 0, answers: {}, attempts: {}, solved: {}, times: {}, challenges: {}, level: {}, adapt: {}, guess: {}, games: {}, started: null }; }
 function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { return null; } }
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
 
@@ -220,25 +236,46 @@ function render() {
   if (state.screen === "step") return renderStep();
   if (state.screen === "challenge") return renderChallenges();
   if (state.screen === "finish") return renderFinish();
+  if (state.screen === "exit") return renderExit();
+}
+
+document.getElementById("navhome").onclick = () => { addTime(); state.screen = "start"; render(); };
+document.getElementById("navreload").onclick = () => { addTime(); save(); location.reload(); };
+
+function renderExit() {
+  header("יצאתם מהמסלול", 0);
+  app.innerHTML = `<h1>העבודה שלכם שמורה</h1>
+    <div class="card explain"><span class="tag">יציאה</span>
+      <p>אפשר לסגור את הלשונית. כשתחזרו לקישור במחשב הזה, תוכלו להמשיך מאותו מקום.</p></div>
+    <button class="primary" id="backin" type="button">חזרה לעמוד הראשון</button>`;
+  document.getElementById("backin").onclick = () => { state.screen = "start"; render(); };
+  try { window.close(); } catch (e) {}
 }
 
 function renderStart() {
   header("לפני שמתחילים", 0);
-  const resume = state.started && state.step > 0;
+  const resume = !!state.started;
   app.innerHTML = `
     <h1>העולם משתנה, ותל אביב-יפו איתו</h1>
     <div class="card explain"><span class="tag">איך זה עובד</span>
       <p>יש כאן <b>6 צעדים</b>. כל אחד עובד לבד, בקצב שלו.</p>
+      <p>כל צעד נפתח בחידה או בניחוש. אין ציון על הניחוש, אז תנחשו באומץ.</p>
       <p>בכל צעד: קוראים הסבר קצר, עושים משימה, ועונים על בדיקה קצרה. ממשיכים רק אחרי שהבדיקה מצליחה. מותר לטעות ולנסות שוב.</p>
       <p>אחרי כל בדיקה מגיעה שאלת חשיבה. מי שעונה נכון כבר בניסיון הראשון יקבל שאלת עומק קשה יותר.</p>
       <p>בסוף שולחים לאסף במייל את מה שעשיתם. מי שמסיים מוקדם יכול לנסות צעדי אתגר.</p>
     </div>
     ${resume ? `<div class="card task"><span class="tag">יש התקדמות שמורה</span>
-        <p>במחשב הזה כבר יש עבודה שהגיעה לצעד ${state.step + 1}. אם זו העבודה שלכם, המשיכו. אם לא, התחילו מחדש.</p>
+        <p>במחשב הזה כבר יש עבודה שהתחילה (צעד ${state.step + 1}). אם זו העבודה שלכם, המשיכו. אם לא, התחילו מחדש.</p>
         <div class="row"><button class="primary" id="resume">המשיכו מצעד ${state.step + 1}</button>
         <button class="ghost" id="restart">התחילו מחדש</button></div></div>`
       : `<button class="primary" id="go">התחילו את הצעד הראשון</button>`}
+    <div class="row" style="margin-top:12px">
+      <button type="button" class="ghost" id="startreload">↻ רענון הדף</button>
+      <button type="button" class="ghost" id="startexit">יציאה ושמירה</button>
+    </div>
   `;
+  document.getElementById("startreload").onclick = () => { save(); location.reload(); };
+  document.getElementById("startexit").onclick = () => { state.screen = "exit"; render(); };
   if (resume) {
     document.getElementById("resume").onclick = () => { state.screen = "step"; stepStart = Date.now(); render(); };
     document.getElementById("restart").onclick = () => { state = fresh(); render(); };
@@ -250,7 +287,15 @@ function renderStart() {
 function renderStep() {
   const i = state.step, s = STEPS[i];
   header(`צעד ${i + 1} מתוך ${STEPS.length}: ${s.title}`, i / STEPS.length);
-  let html = `<h1>${esc(s.title)}</h1><div class="card explain"><span class="tag">הסבר</span>${s.explain}</div>`;
+  let html = `<h1>${esc(s.title)}</h1>`;
+  if (s.guess) {
+    const g = s.guess, got = state.guess[i];
+    html += `<div class="card game"><span class="tag">חידה</span><div class="qt" style="font-weight:600;margin-bottom:8px">${esc(g.q)}</div>
+      <div class="opts" id="guessopts">${g.options.map((o, oi) => `<button type="button" data-oi="${oi}" class="${got !== undefined && oi === g.correct ? "right" : got === oi ? "wrong" : ""}">${esc(o)}</button>`).join("")}</div>
+      ${got !== undefined ? `<div class="reveal">${got === g.correct ? "ניחשתם נכון! " : ""}${esc(g.reveal)}</div>` : ""}</div>`;
+  }
+  const locked = s.guess && state.guess[i] === undefined;
+  html += `<div id="rest" class="${locked ? "hidden" : ""}"><div class="card explain"><span class="tag">הסבר</span>${s.explain}</div>`;
   if (s.task) {
     html += `<div class="card task"><span class="tag">משימה</span>
       <label class="lbl" for="task">${esc(s.task.prompt)}</label>
@@ -260,8 +305,14 @@ function renderStep() {
   html += `<div class="card check"><span class="tag">בדיקה</span><div id="qs"></div></div>
     <div id="adapt"></div>
     <button class="primary" id="next" disabled>${i === STEPS.length - 1 ? "סיימתי את המסלול" : "המשיכו לצעד " + (i + 2)}</button>
+    </div>
     ${i > 0 ? `<button class="ghost" id="back" style="margin-top:8px;width:100%">חזרה לצעד ${i}</button>` : ""}`;
   app.innerHTML = html;
+  if (locked) {
+    document.querySelectorAll("#guessopts button").forEach(b => b.onclick = () => {
+      state.guess[i] = Number(b.dataset.oi); save(); renderStep();
+    });
+  }
 
   const qs = document.getElementById("qs");
   s.check.forEach((q, qi) => qs.appendChild(buildQ(i, q, qi)));
@@ -432,7 +483,20 @@ function renderChallenges() {
     ${CHALLENGES.map((c, ci) => `<div class="card task"><span class="tag">${esc(c.title)}</span>
       <label class="lbl" for="ch${ci}">${esc(c.prompt)}</label>
       <textarea id="ch${ci}">${esc(state.challenges[ci] || "")}</textarea></div>`).join("")}
+    <div class="card game"><span class="tag">משחק 1: בלשי זמן</span>
+      <p>ב-Google Street View יש "מכונת זמן", שמראה איך נראה מקום לפני כמה שנים.</p>
+      <p>1. פתחו את <a class="ext" href="https://www.google.com/maps" target="_blank" rel="noopener">Google Maps</a> וחפשו מקום בתל אביב-יפו (הרחוב שלכם, בית הספר, נמל יפו, כיכר).</p>
+      <p>2. גררו את האיש הצהוב אל הרחוב.</p>
+      <p>3. בתיבה שבפינה העליונה לחצו על השעון, או על "תאריכים נוספים", ובחרו שנה ישנה.</p>
+      <label class="lbl" for="game0">מה מצאתם? כתבו את שם המקום, מה השתנה, ומה המחיר של השינוי.</label>
+      <textarea id="game0">${esc(state.games[0] || "")}</textarea>
+      <p class="small">רוצים להראות לכיתה? צלמו מסך של "אז" ושל "עכשיו". אולי נציג אותם במעגל הסגירה.</p></div>
+    <div class="card game"><span class="tag">משחק 2: הגודל האמיתי</span>
+      <p>פתחו את <a class="ext" href="https://www.thetruesize.com" target="_blank" rel="noopener">The True Size</a>. כתבו שם של מדינה, וגררו אותה על המפה. שימו לב מה קורה לגודל שלה כשמזיזים אותה לקו המשווה ולקטבים.</p>
+      <label class="lbl" for="game1">משימה: מצאו מדינה שנראית במפה גדולה מאפריקה, אבל היא באמת קטנה ממנה. איזו מדינה, ופי כמה היא קטנה?</label>
+      <textarea id="game1">${esc(state.games[1] || "")}</textarea></div>
     <button class="primary" id="tofinish">עברו לשליחת העבודה לאסף</button>`;
+  [0, 1].forEach(gi => { const t = document.getElementById("game" + gi); t.oninput = () => { state.games[gi] = t.value; save(); }; });
   CHALLENGES.forEach((c, ci) => {
     const ta = document.getElementById("ch" + ci);
     ta.oninput = () => { state.challenges[ci] = ta.value; save(); };
@@ -455,6 +519,10 @@ function summary() {
   CHALLENGES.forEach((c, ci) => {
     if ((state.challenges[ci] || "").trim()) { lines.push(c.title + ":", state.challenges[ci].trim(), ""); }
   });
+  const GNAMES = ["בלשי זמן", "הגודל האמיתי"];
+  [0, 1].forEach(gi => { if ((state.games[gi] || "").trim()) lines.push(GNAMES[gi] + ":", state.games[gi].trim(), ""); });
+  const guessed = STEPS.filter((st, i) => st.guess && state.guess[i] === st.guess.correct).length;
+  lines.push(`חידות: ניחשתי נכון ${guessed} מתוך ${STEPS.length}.`);
   lines.push(`סה"כ: ${Math.round(totalTime / 60)} דקות, ${totalAttempts} ניסיונות ל-${totalQs} שאלות.`);
   return lines.join("\n");
 }

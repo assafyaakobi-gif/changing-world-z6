@@ -75,7 +75,7 @@
 
 <script>
 const TEACHER_EMAIL = "1005825472@taded.org.il";
-const STORE_KEY = "changing-world-z6-v1";
+const STORE_KEY = "changing-world-z6-v2";
 const CONCEPTS = ["עולם משתנה", "קצב השינוי", "נוף טבעי", "נוף אנושי", "אחריות סביבתית"];
 
 const STEPS = [
@@ -85,14 +85,16 @@ const STEPS = [
       <p>ככל שמתרחקים מקו המשווה ומתקרבים לקטבים, ארצות נראות גדולות יותר ממה שהן באמת.</p>
       <p>מפה שוויונית יותר, כמו <b>Equal Earth</b>, מראה את הגדלים האמיתיים.</p>
       <p class="fact">אפריקה גדולה מגרינלנד בערך פי 14. במפת מרקטור הן נראות כמעט באותו גודל.</p>`,
-    task: { prompt: "למה לדעתכם חשוב שמפה תראה את הגדלים האמיתיים? כתבו משפט אחד או שניים.", min: 15 },
+    task: { prompt: "דמיינו ילד באפריקה שרואה כל חייו מפה שבה היבשת שלו נראית קטנה כמו גרינלנד. מה הוא עלול לחשוב על המקום שלו בעולם? למה?", min: 25 },
+    deep: "מפת מרקטור נוצרה ב-1569 בשביל ימאים, והיא מצוינת לניווט. אז האם היא \"מפה שקרית\"? או שכל מפה בוחרת מה להראות ומה לעוות? נמקו.",
+    scaffold: "השלימו: במפת מרקטור, ארצות ליד הקטבים נראות ___ ממה שהן באמת. זה יכול להטעות אנשים, כי ___.",
     check: [
       { type: "mcq", q: "במפת מרקטור, אילו אזורים נראים גדולים יותר מהמציאות?",
         options: ["אזורים קרובים לקו המשווה", "אזורים קרובים לקטבים", "כל האזורים נראים בגודל הנכון"], correct: 1,
-        hint: "חשבו על גרינלנד. היא קרובה לקוטב הצפוני ונראית ענקית." },
+        hint: "גרינלנד קרובה לקוטב הצפוני ונראית ענקית. אז מה קורה לאזורים שקרובים לקטבים?" },
       { type: "mcq", q: "מה נכון לגבי אפריקה וגרינלנד במציאות?",
         options: ["הן באותו גודל", "אפריקה גדולה בערך פי 14", "גרינלנד גדולה יותר"], correct: 1,
-        hint: "קראו שוב את המשפט המודגש בהסבר." }
+        hint: "אם שתיהן נראות באותו גודל במפה, ואנחנו יודעים שהמפה מגדילה אזורים ליד הקטבים, מי מהן באמת גדולה יותר?" }
     ]
   },
   {
@@ -101,14 +103,16 @@ const STEPS = [
       <p>ערים גדלות, כבישים ורכבות נבנים, חופים משתנים, ויש לנו דרכים חדשות לראות את העולם. לכן גם המפות משתנות.</p>
       <p><b>עולם משתנה</b>: שינויים בנוף, באנשים, בטכנולוגיה ובסביבה.</p>
       <p><b>קצב השינוי</b>: כמה מהר דברים משתנים. פעם שינוי גדול לקח דורות. היום שכונה שלמה יכולה להשתנות בכמה שנים.</p>`,
-    task: { prompt: "כתבו שינוי אחד שראיתם בתל אביב-יפו בשנים האחרונות. מה היה שם קודם, ומה יש היום?", min: 15 },
+    task: { prompt: "חשבו על מקום אחד בתל אביב-יפו שאתם מכירים טוב (רחוב, חוף, שוק, שכונה). מה היה שם לדעתכם לפני 20 שנה, ומה יש היום? ואיך אתם יודעים? (ראיתם, שמעתם, קראתם?)", min: 25 },
+    deep: "אם כל מפה היא \"תמונה ברגע מסוים\", איזה דבר במפה של תל אביב-יפו כבר לא יהיה נכון בעוד 10 שנים? למה דווקא הוא?",
+    scaffold: "השלימו: צריך לעדכן מפות, כי ___. דוגמה לשינוי בעיר: ___.",
     check: [
       { type: "mcq", q: "למה צריך לעדכן מפות מדי פעם?",
         options: ["כי העולם משתנה", "כי מפות ישנות פחות יפות", "לא צריך לעדכן מפות"], correct: 0,
-        hint: "מפה היא תמונה של העולם ברגע מסוים. מה קורה לעולם עם הזמן?" },
+        hint: "מפה היא תמונה של העולם ברגע מסוים. אם העולם ממשיך לזוז, מה קורה לתמונה הישנה?" },
       { type: "mcq", q: "מה נכון לגבי קצב השינוי היום, לעומת לפני 100 שנה?",
         options: ["השינויים איטיים יותר", "השינויים מהירים יותר", "אין היום שינויים"], correct: 1,
-        hint: "כמה זמן לוקח היום לשכונה להשתנות?" }
+        hint: "פעם שינוי גדול לקח דורות. כמה זמן זה לוקח היום?" }
     ]
   },
   {
@@ -117,6 +121,8 @@ const STEPS = [
       <p><b>נוף אנושי</b>: מה שבני אדם בנו או שינו. למשל בתים, כבישים, נמל, פארק.</p>
       <p>לפני 1909, במקום שבו נמצא היום מרכז תל אביב, היו בעיקר <b>חולות</b>. יפו כבר הייתה עיר נמל עתיקה.</p>
       <p class="fact">היום גרים בתל אביב-יפו כמעט חצי מיליון אנשים.</p>`,
+    deep: "פארק הירקון נראה \"טבעי\": עצים, דשא ומים. אבל הוא נוף אנושי. איך אפשר לדעת אם נוף הוא טבעי או אנושי, כשהוא נראה ירוק ויפה? נסחו כלל משלכם, ובדקו אותו על עוד מקום בעיר.",
+    scaffold: "בחרו מקום אחד בעיר והשלימו: הוא נוף ___, כי ___.",
     check: [
       { type: "mcq", q: "חולות על החוף", options: ["נוף טבעי", "נוף אנושי"], correct: 0, hint: "מי יצר את החולות?" },
       { type: "mcq", q: "הרכבת הקלה", options: ["נוף טבעי", "נוף אנושי"], correct: 1, hint: "מי בנה את הרכבת?" },
@@ -134,6 +140,8 @@ const STEPS = [
       <p>ב-<b>1950</b> תל אביב ויפו <b>התאחדו לעיר אחת</b>: תל אביב-יפו.</p>
       <p>ב-<b>1999</b> נחנך המגדל הראשון של <b>מרכז עזריאלי</b>, ומאז נבנו בעיר עוד הרבה מגדלים.</p>
       <p>ב-<b>2023</b> נפתח <b>הקו האדום של הרכבת הקלה</b>, שעובר גם ביפו וגם בתל אביב.</p>`,
+    deep: "יפו קיימת אלפי שנים, ותל אביב רק בערך 117 שנה. אבל רוב השינויים בציר הזמן קרו ב-100 השנים האחרונות. מה זה אומר על קצב השינוי? איזה הסבר אתם יכולים לתת לזה?",
+    scaffold: "השלימו: השינוי הכי גדול בציר הזמן הוא לדעתי ___, כי ___.",
     check: [
       { type: "order", q: "לחצו על האירועים לפי הסדר, מהמוקדם למאוחר.",
         items: ["נמל יפו פועל ואנשים סוחרים בו", "ייסוד שכונה חדשה על החולות (תל אביב)", "תל אביב ויפו מתאחדות לעיר אחת", "נחנך המגדל הראשון של מרכז עזריאלי", "נפתח הקו האדום של הרכבת הקלה"],
@@ -149,7 +157,9 @@ const STEPS = [
     explain: `<p>לשינויים יש יתרונות: יותר בתים, יותר עבודה, תחבורה מהירה יותר. אבל לכל שינוי יש גם <b>מחיר</b>, לסביבה ולאנשים.</p>
       <p>למשל: יותר מכוניות גורמות לפקקים ולזיהום אוויר. במשך שנים הזרימו לירקון מים מזוהמים, והנהר נפגע מאוד.</p>
       <p><b>אחריות סביבתית</b>: לחשוב על המחיר ולנסות לתקן או למנוע אותו. למשל לשקם את הירקון, לבנות רכבת ושבילי אופניים, ולשמור על החוף.</p>`,
-    task: { prompt: "בחרו שינוי אחד בתל אביב-יפו. כתבו מה היתרון שלו ומה המחיר שלו.", min: 20 },
+    task: { prompt: "בחרו שינוי אחד בתל אביב-יפו. מה היתרון שלו? מה המחיר שלו? ומי משלם את המחיר: הסביבה, אנשים מסוימים, או כולם?", min: 30 },
+    deep: "הרכבת הקלה מפחיתה פקקים וזיהום. אבל בזמן הבנייה נסגרו רחובות, ועסקים לאורך המסלול נפגעו. האם המחיר היה שווה את זה? ומה היה אומר מישהו שחושב הפוך מכם?",
+    scaffold: "השלימו: הרכבת הקלה טובה לסביבה, כי ___. אבל היא גם ___.",
     check: [
       { type: "mcq", q: "מה המחיר של \"יותר מכוניות בעיר\"?",
         options: ["פקקים וזיהום אוויר", "יותר חול בחוף", "פחות אנשים בעיר"], correct: 0, hint: "מה יוצא מהאגזוז של המכונית?" },
@@ -166,6 +176,8 @@ const STEPS = [
       <div class="chips">${CONCEPTS.map(c => `<span class="chip">${c}</span>`).join("")}</div>
       <p class="starters">אפשר להתחיל כך: "פעם, במקום שבו... היום יש..." / "השינוי הזה קרה מהר כי..." / "המחיר של השינוי הוא..." / "כדי לתקן, אפשר..."</p>`,
     task: { prompt: "כתבו כאן את 3–4 המשפטים שלכם:", min: 80, big: true },
+    deep: "קראו את מה שכתבתם. איזה משפט שלכם הכי קשה להוכיח? מה הייתם צריכים לבדוק כדי לדעת שהוא נכון?",
+    scaffold: "בחרו מושג אחד שהשתמשתם בו, והסבירו אותו במילים שלכם במשפט אחד.",
     check: [
       { type: "selfcheck", q: "לפני שממשיכים, בדקו את עצמכם:",
         items: ["השתמשתי בלפחות 2 מושגים מהרשימה", "נתתי דוגמה אחת מתל אביב-יפו", "כתבתי על מחיר של שינוי או על אחריות"] }
@@ -179,7 +191,8 @@ const CHALLENGES = [
 ];
 
 let state = load() || fresh();
-function fresh() { return { screen: "start", step: 0, answers: {}, attempts: {}, solved: {}, times: {}, challenges: {}, started: null }; }
+state.level = state.level || {}; state.adapt = state.adapt || {};
+function fresh() { return { screen: "start", step: 0, answers: {}, attempts: {}, solved: {}, times: {}, challenges: {}, level: {}, adapt: {}, started: null }; }
 function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { return null; } }
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
 
@@ -217,6 +230,7 @@ function renderStart() {
     <div class="card explain"><span class="tag">איך זה עובד</span>
       <p>יש כאן <b>6 צעדים</b>. כל אחד עובד לבד, בקצב שלו.</p>
       <p>בכל צעד: קוראים הסבר קצר, עושים משימה, ועונים על בדיקה קצרה. ממשיכים רק אחרי שהבדיקה מצליחה. מותר לטעות ולנסות שוב.</p>
+      <p>אחרי כל בדיקה מגיעה שאלת חשיבה. מי שעונה נכון כבר בניסיון הראשון יקבל שאלת עומק קשה יותר.</p>
       <p>בסוף שולחים לאסף במייל את מה שעשיתם. מי שמסיים מוקדם יכול לנסות צעדי אתגר.</p>
     </div>
     ${resume ? `<div class="card task"><span class="tag">יש התקדמות שמורה</span>
@@ -244,6 +258,7 @@ function renderStep() {
       <p class="small" id="taskfb"></p></div>`;
   }
   html += `<div class="card check"><span class="tag">בדיקה</span><div id="qs"></div></div>
+    <div id="adapt"></div>
     <button class="primary" id="next" disabled>${i === STEPS.length - 1 ? "סיימתי את המסלול" : "המשיכו לצעד " + (i + 2)}</button>
     ${i > 0 ? `<button class="ghost" id="back" style="margin-top:8px;width:100%">חזרה לצעד ${i}</button>` : ""}`;
   app.innerHTML = html;
@@ -277,8 +292,47 @@ function updateNext() {
     const fb = document.getElementById("taskfb");
     fb.textContent = taskOk ? "✓ המשימה מוכנה." : "כתבו עוד קצת כדי להמשיך.";
   }
+  let adaptOk = true;
+  if (allSolved && s.deep) {
+    renderAdapt(i, s);
+    const min = state.level[i] === "deep" ? 30 : 15;
+    adaptOk = (state.adapt[i] || "").trim().length >= min;
+  }
   const btn = document.getElementById("next");
-  btn.disabled = !(allSolved && taskOk);
+  btn.disabled = !(allSolved && taskOk && adaptOk);
+}
+
+// Level: first-try success rate in this step and the previous one (>= 80% -> deep question)
+function decideLevel(i) {
+  if (state.level[i]) return state.level[i];
+  let first = 0, total = 0;
+  Object.keys(state.solved).forEach(k => {
+    const [si, qi] = k.split(".").map(Number);
+    if (si > i || si < i - 1 || !state.attempts[k]) return;
+    total++; if (state.attempts[k] === 1) first++;
+  });
+  state.level[i] = total && first / total >= 0.8 ? "deep" : "basic";
+  save();
+  return state.level[i];
+}
+
+function renderAdapt(i, s) {
+  const box = document.getElementById("adapt");
+  if (box.dataset.done) return;
+  box.dataset.done = "1";
+  const deep = decideLevel(i) === "deep";
+  box.innerHTML = `<div class="card check"><span class="tag">${deep ? "שאלת עומק" : "שאלת חשיבה"}</span>
+    <p class="small">${deep ? "עניתם מצוין על הבדיקות, אז הנה שאלה קשה יותר. אין כאן תשובה אחת נכונה. חשוב שתנמקו." : "עוד שאלה אחת, כדי לוודא שהרעיון ברור."}</p>
+    <label class="lbl" for="adaptta">${esc(deep ? s.deep : s.scaffold)}</label>
+    <textarea id="adaptta">${esc(state.adapt[i] || "")}</textarea>
+    <p class="small" id="adaptfb"></p></div>`;
+  const ta = document.getElementById("adaptta");
+  ta.oninput = () => {
+    state.adapt[i] = ta.value; save();
+    const min = deep ? 30 : 15;
+    document.getElementById("adaptfb").textContent = ta.value.trim().length >= min ? "✓ מוכן." : (deep ? "נמקו קצת יותר: למה? איך אתם יודעים?" : "כתבו עוד קצת כדי להמשיך.");
+    updateNext();
+  };
 }
 
 function buildQ(i, q, qi) {
@@ -395,6 +449,7 @@ function summary() {
     totalAttempts += att.reduce((a, b) => a + b, 0); totalQs += att.length;
     lines.push(`צעד ${i + 1} – ${s.title} (${Math.max(1, Math.round(t / 60))} דק', ניסיונות בבדיקה: ${att.join(", ") || "-"})`);
     if (s.task && state.answers[i]) lines.push("תשובה: " + state.answers[i].trim());
+    if (state.adapt[i]) lines.push((state.level[i] === "deep" ? "שאלת עומק: " : "שאלת חשיבה: ") + state.adapt[i].trim());
     lines.push("");
   });
   CHALLENGES.forEach((c, ci) => {

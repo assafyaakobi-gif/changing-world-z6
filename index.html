@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>העולם משתנה – ז6</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5a6475; --line: #d9dee6;
+    --explain: #1f5fbf; --explain-bg: #eaf1fc;
+    --task: #1d7a46; --task-bg: #e8f5ee;
+    --check: #6b3fb5; --check-bg: #f1ebfa;
+    --ok: #1d7a46; --bad: #b3261e; --focus: #f5a623;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, "Segoe UI", Arial, sans-serif; font-size: 18px; line-height: 1.6; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+  header.top { position: sticky; top: 0; background: var(--bg); padding-block: 12px 8px; z-index: 2; }
+  .stepname { font-size: 15px; color: var(--muted); margin: 0 0 6px; }
+  .bar { height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--task); width: 0; transition: width .3s; }
+  h1 { font-size: 26px; line-height: 1.3; margin: 16px 0 12px; }
+  h2 { font-size: 19px; margin: 0 0 8px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-inline-start: 6px solid var(--line); border-radius: 10px; padding: 16px; margin-block: 14px; }
+  .card.explain { border-inline-start-color: var(--explain); }
+  .card.task { border-inline-start-color: var(--task); }
+  .card.check { border-inline-start-color: var(--check); }
+  .tag { display: inline-block; font-size: 14px; font-weight: 700; padding: 2px 10px; border-radius: 99px; margin-bottom: 8px; }
+  .explain .tag { background: var(--explain-bg); color: var(--explain); }
+  .task .tag { background: var(--task-bg); color: var(--task); }
+  .check .tag { background: var(--check-bg); color: var(--check); }
+  p { margin: 0 0 10px; }
+  .fact { background: var(--explain-bg); border-radius: 8px; padding: 10px 12px; font-weight: 600; }
+  button, select, textarea { font: inherit; }
+  button { min-height: 48px; padding: 10px 18px; border-radius: 10px; border: 2px solid var(--text); background: #fff; color: var(--text); cursor: pointer; }
+  button.primary { background: var(--task); border-color: var(--task); color: #fff; font-weight: 700; width: 100%; margin-top: 8px; }
+  button.primary:disabled { background: #9aa3b1; border-color: #9aa3b1; cursor: not-allowed; }
+  a.linkbtn { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: var(--task); color: #fff; font-weight: 700; text-decoration: none; margin-top: 8px; }
+  button.ghost { border-color: var(--line); color: var(--muted); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  textarea { width: 100%; min-height: 110px; padding: 10px; border: 2px solid var(--line); border-radius: 8px; line-height: 1.5; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  .q { padding-block: 12px; border-top: 1px solid var(--line); }
+  .q:first-of-type { border-top: 0; }
+  .q .qt { font-weight: 600; margin-bottom: 8px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opts button { flex: 1 1 200px; text-align: start; border-color: var(--line); }
+  .opts button.right { border-color: var(--ok); background: var(--task-bg); }
+  .opts button.wrong { border-color: var(--bad); background: #fdeceb; }
+  .fb { margin-top: 8px; font-weight: 600; }
+  .fb.ok { color: var(--ok); } .fb.bad { color: var(--bad); }
+  .order-pool, .order-picked { display: flex; flex-direction: column; gap: 8px; }
+  .order-picked { margin-block: 10px; padding: 10px; border: 2px dashed var(--line); border-radius: 8px; min-height: 60px; }
+  .order-picked .num { font-weight: 700; color: var(--check); margin-inline-end: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip { background: var(--check-bg); color: var(--check); border-radius: 99px; padding: 2px 10px; font-size: 15px; font-weight: 600; }
+  .starters { color: var(--muted); font-size: 16px; }
+  .checklist label { display: flex; gap: 10px; align-items: center; min-height: 44px; }
+  .checklist input { width: 24px; height: 24px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row button { flex: 1 1 200px; }
+  .small { font-size: 15px; color: var(--muted); }
+  .hidden { display: none; }
+  pre.summary { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 16px; max-height: 300px; overflow: auto; }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <p class="stepname" id="stepname"></p>
+    <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+  </header>
+  <div id="app" aria-live="polite"></div>
+</main>
+
+<script>
+const TEACHER_EMAIL = "1005825472@taded.org.il";
+const STORE_KEY = "changing-world-z6-v1";
+const CONCEPTS = ["עולם משתנה", "קצב השינוי", "נוף טבעי", "נוף אנושי", "אחריות סביבתית"];
+
+const STEPS = [
+  {
+    title: "חזרה: המפה שלנו",
+    explain: `<p>בשיעור הקודם ראינו שמפת העולם המוכרת, <b>מפת מרקטור</b>, מעוותת גדלים.</p>
+      <p>ככל שמתרחקים מקו המשווה ומתקרבים לקטבים, ארצות נראות גדולות יותר ממה שהן באמת.</p>
+      <p>מפה שוויונית יותר, כמו <b>Equal Earth</b>, מראה את הגדלים האמיתיים.</p>
+      <p class="fact">אפריקה גדולה מגרינלנד בערך פי 14. במפת מרקטור הן נראות כמעט באותו גודל.</p>`,
+    task: { prompt: "למה לדעתכם חשוב שמפה תראה את הגדלים האמיתיים? כתבו משפט אחד או שניים.", min: 15 },
+    check: [
+      { type: "mcq", q: "במפת מרקטור, אילו אזורים נראים גדולים יותר מהמציאות?",
+        options: ["אזורים קרובים לקו המשווה", "אזורים קרובים לקטבים", "כל האזורים נראים בגודל הנכון"], correct: 1,
+        hint: "חשבו על גרינלנד. היא קרובה לקוטב הצפוני ונראית ענקית." },
+      { type: "mcq", q: "מה נכון לגבי אפריקה וגרינלנד במציאות?",
+        options: ["הן באותו גודל", "אפריקה גדולה בערך פי 14", "גרינלנד גדולה יותר"], correct: 1,
+        hint: "קראו שוב את המשפט המודגש בהסבר." }
+    ]
+  },
+  {
+    title: "מפות משתנות, כי העולם משתנה",
+    explain: `<p>מפה היא תמונה של העולם ברגע מסוים. אבל העולם לא עומד במקום.</p>
+      <p>ערים גדלות, כבישים ורכבות נבנים, חופים משתנים, ויש לנו דרכים חדשות לראות את העולם. לכן גם המפות משתנות.</p>
+      <p><b>עולם משתנה</b>: שינויים בנוף, באנשים, בטכנולוגיה ובסביבה.</p>
+      <p><b>קצב השינוי</b>: כמה מהר דברים משתנים. פעם שינוי גדול לקח דורות. היום שכונה שלמה יכולה להשתנות בכמה שנים.</p>`,
+    task: { prompt: "כתבו שינוי אחד שראיתם בתל אביב-יפו בשנים האחרונות. מה היה שם קודם, ומה יש היום?", min: 15 },
+    check: [
+      { type: "mcq", q: "למה צריך לעדכן מפות מדי פעם?",
+        options: ["כי העולם משתנה", "כי מפות ישנות פחות יפות", "לא צריך לעדכן מפות"], correct: 0,
+        hint: "מפה היא תמונה של העולם ברגע מסוים. מה קורה לעולם עם הזמן?" },
+      { type: "mcq", q: "מה נכון לגבי קצב השינוי היום, לעומת לפני 100 שנה?",
+        options: ["השינויים איטיים יותר", "השינויים מהירים יותר", "אין היום שינויים"], correct: 1,
+        hint: "כמה זמן לוקח היום לשכונה להשתנות?" }
+    ]
+  },
+  {
+    title: "נוף טבעי ונוף אנושי",
+    explain: `<p><b>נוף טבעי</b>: מה שהטבע יצר. למשל ים, חול, נהר, גבעות.</p>
+      <p><b>נוף אנושי</b>: מה שבני אדם בנו או שינו. למשל בתים, כבישים, נמל, פארק.</p>
+      <p>לפני 1909, במקום שבו נמצא היום מרכז תל אביב, היו בעיקר <b>חולות</b>. יפו כבר הייתה עיר נמל עתיקה.</p>
+      <p class="fact">היום גרים בתל אביב-יפו כמעט חצי מיליון אנשים.</p>`,
+    check: [
+      { type: "mcq", q: "חולות על החוף", options: ["נוף טבעי", "נוף אנושי"], correct: 0, hint: "מי יצר את החולות?" },
+      { type: "mcq", q: "הרכבת הקלה", options: ["נוף טבעי", "נוף אנושי"], correct: 1, hint: "מי בנה את הרכבת?" },
+      { type: "mcq", q: "הים התיכון", options: ["נוף טבעי", "נוף אנושי"], correct: 0, hint: "האם בני אדם יצרו את הים?" },
+      { type: "mcq", q: "נמל יפו", options: ["נוף טבעי", "נוף אנושי"], correct: 1, hint: "את המזחים ואת הנמל בנו בני אדם." },
+      { type: "mcq", q: "נהר הירקון", options: ["נוף טבעי", "נוף אנושי"], correct: 0, hint: "הנהר זרם שם הרבה לפני שבנו את העיר." },
+      { type: "mcq", q: "פארק הירקון (הדשאים, השבילים והאגם)", options: ["נוף טבעי", "נוף אנושי"], correct: 1,
+        hint: "שאלה מכשילה. הנהר טבעי, אבל את הפארק תכננו ובנו בני אדם." }
+    ]
+  },
+  {
+    title: "ציר הזמן של תל אביב-יפו",
+    explain: `<p><b>יפו</b> היא אחת מערי הנמל העתיקות בעולם. אנשים חיו בה וסחרו בנמל שלה כבר לפני אלפי שנים.</p>
+      <p>ב-<b>1909</b> קבוצת משפחות ייסדה שכונה חדשה על החולות שמצפון ליפו. השכונה גדלה והפכה ל<b>תל אביב</b>.</p>
+      <p>ב-<b>1950</b> תל אביב ויפו <b>התאחדו לעיר אחת</b>: תל אביב-יפו.</p>
+      <p>ב-<b>1999</b> נחנך המגדל הראשון של <b>מרכז עזריאלי</b>, ומאז נבנו בעיר עוד הרבה מגדלים.</p>
+      <p>ב-<b>2023</b> נפתח <b>הקו האדום של הרכבת הקלה</b>, שעובר גם ביפו וגם בתל אביב.</p>`,
+    check: [
+      { type: "order", q: "לחצו על האירועים לפי הסדר, מהמוקדם למאוחר.",
+        items: ["נמל יפו פועל ואנשים סוחרים בו", "ייסוד שכונה חדשה על החולות (תל אביב)", "תל אביב ויפו מתאחדות לעיר אחת", "נחנך המגדל הראשון של מרכז עזריאלי", "נפתח הקו האדום של הרכבת הקלה"],
+        years: ["לפני אלפי שנים", "1909", "1950", "1999", "2023"],
+        hint: "התחילו ממה שהכי עתיק. אפשר לגלול למעלה ולקרוא שוב את ההסבר." },
+      { type: "mcq", q: "בערך כמה שנים עברו מייסוד תל אביב ועד היום?",
+        options: ["בערך 50 שנה", "בערך 117 שנה", "בערך 1,000 שנה"], correct: 1,
+        hint: "חשבו: 2026 פחות 1909." }
+    ]
+  },
+  {
+    title: "המחיר של השינוי, והאחריות שלנו",
+    explain: `<p>לשינויים יש יתרונות: יותר בתים, יותר עבודה, תחבורה מהירה יותר. אבל לכל שינוי יש גם <b>מחיר</b>, לסביבה ולאנשים.</p>
+      <p>למשל: יותר מכוניות גורמות לפקקים ולזיהום אוויר. במשך שנים הזרימו לירקון מים מזוהמים, והנהר נפגע מאוד.</p>
+      <p><b>אחריות סביבתית</b>: לחשוב על המחיר ולנסות לתקן או למנוע אותו. למשל לשקם את הירקון, לבנות רכבת ושבילי אופניים, ולשמור על החוף.</p>`,
+    task: { prompt: "בחרו שינוי אחד בתל אביב-יפו. כתבו מה היתרון שלו ומה המחיר שלו.", min: 20 },
+    check: [
+      { type: "mcq", q: "מה המחיר של \"יותר מכוניות בעיר\"?",
+        options: ["פקקים וזיהום אוויר", "יותר חול בחוף", "פחות אנשים בעיר"], correct: 0, hint: "מה יוצא מהאגזוז של המכונית?" },
+      { type: "mcq", q: "מה קרה לירקון כשהזרימו אליו מים מזוהמים?",
+        options: ["הוא נעשה נקי יותר", "הנהר נפגע מאוד", "שום דבר"], correct: 1, hint: "קראו שוב את הפסקה השנייה." },
+      { type: "mcq", q: "מה מהדברים האלה הוא דוגמה לאחריות סביבתית?",
+        options: ["לבנות עוד חניונים על החוף", "לשקם את נהר הירקון", "לזרוק פסולת לים"], correct: 1, hint: "מה מתקן מחיר שהסביבה שילמה?" }
+    ]
+  },
+  {
+    title: "התוצר שלי: העיר שלי בעולם משתנה",
+    explain: `<p>זה הצעד האחרון במסלול. עכשיו אתם מחברים את כל מה שלמדתם.</p>
+      <p>כתבו 3–4 משפטים על תל אביב-יפו כעיר בעולם משתנה. השתמשו בלפחות 2 מושגים מהרשימה, ותנו דוגמה אחת מהעיר.</p>
+      <div class="chips">${CONCEPTS.map(c => `<span class="chip">${c}</span>`).join("")}</div>
+      <p class="starters">אפשר להתחיל כך: "פעם, במקום שבו... היום יש..." / "השינוי הזה קרה מהר כי..." / "המחיר של השינוי הוא..." / "כדי לתקן, אפשר..."</p>`,
+    task: { prompt: "כתבו כאן את 3–4 המשפטים שלכם:", min: 80, big: true },
+    check: [
+      { type: "selfcheck", q: "לפני שממשיכים, בדקו את עצמכם:",
+        items: ["השתמשתי בלפחות 2 מושגים מהרשימה", "נתתי דוגמה אחת מתל אביב-יפו", "כתבתי על מחיר של שינוי או על אחריות"] }
+    ]
+  }
+];
+
+const CHALLENGES = [
+  { title: "אתגר 1: תל אביב-יפו ב-2050", prompt: "איך תיראה העיר ב-2050? תארו שני שינויים שלדעתכם יקרו, ולכל אחד מהם יתרון ומחיר." },
+  { title: "אתגר 2: מי מרוויח ומי משלם?", prompt: "כשמשכונה משתנה (בניינים חדשים, מחירים עולים, אנשים חדשים מגיעים), יש מי שמרוויח ויש מי שמשלם. תנו דוגמה לכל צד. נסו לחשוב גם על מבוגרים, על משפחות ועל בעלי עסקים." }
+];
+
+let state = load() || fresh();
+function fresh() { return { screen: "start", step: 0, answers: {}, attempts: {}, solved: {}, times: {}, challenges: {}, started: null }; }
+function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { return null; } }
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+let stepStart = Date.now();
+function addTime() {
+  if (state.screen !== "step") return;
+  const k = state.step;
+  state.times[k] = (state.times[k] || 0) + Math.round((Date.now() - stepStart) / 1000);
+  stepStart = Date.now();
+}
+window.addEventListener("beforeunload", () => { addTime(); save(); });
+
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function header(name, frac) {
+  document.getElementById("stepname").textContent = name;
+  document.getElementById("bar").style.width = Math.round(frac * 100) + "%";
+}
+
+function render() {
+  save();
+  window.scrollTo(0, 0);
+  if (state.screen === "start") return renderStart();
+  if (state.screen === "step") return renderStep();
+  if (state.screen === "challenge") return renderChallenges();
+  if (state.screen === "finish") return renderFinish();
+}
+
+function renderStart() {
+  header("לפני שמתחילים", 0);
+  const resume = state.started && state.step > 0;
+  app.innerHTML = `
+    <h1>העולם משתנה, ותל אביב-יפו איתו</h1>
+    <div class="card explain"><span class="tag">איך זה עובד</span>
+      <p>יש כאן <b>6 צעדים</b>. כל אחד עובד לבד, בקצב שלו.</p>
+      <p>בכל צעד: קוראים הסבר קצר, עושים משימה, ועונים על בדיקה קצרה. ממשיכים רק אחרי שהבדיקה מצליחה. מותר לטעות ולנסות שוב.</p>
+      <p>בסוף שולחים לאסף במייל את מה שעשיתם. מי שמסיים מוקדם יכול לנסות צעדי אתגר.</p>
+    </div>
+    ${resume ? `<div class="card task"><span class="tag">יש התקדמות שמורה</span>
+        <p>במחשב הזה כבר יש עבודה שהגיעה לצעד ${state.step + 1}. אם זו העבודה שלכם, המשיכו. אם לא, התחילו מחדש.</p>
+        <div class="row"><button class="primary" id="resume">המשיכו מצעד ${state.step + 1}</button>
+        <button class="ghost" id="restart">התחילו מחדש</button></div></div>`
+      : `<button class="primary" id="go">התחילו את הצעד הראשון</button>`}
+  `;
+  if (resume) {
+    document.getElementById("resume").onclick = () => { state.screen = "step"; stepStart = Date.now(); render(); };
+    document.getElementById("restart").onclick = () => { state = fresh(); render(); };
+  } else {
+    document.getElementById("go").onclick = () => { state.started = new Date().toISOString(); state.screen = "step"; state.step = 0; stepStart = Date.now(); render(); };
+  }
+}
+
+function renderStep() {
+  const i = state.step, s = STEPS[i];
+  header(`צעד ${i + 1} מתוך ${STEPS.length}: ${s.title}`, i / STEPS.length);
+  let html = `<h1>${esc(s.title)}</h1><div class="card explain"><span class="tag">הסבר</span>${s.explain}</div>`;
+  if (s.task) {
+    html += `<div class="card task"><span class="tag">משימה</span>
+      <label class="lbl" for="task">${esc(s.task.prompt)}</label>
+      <textarea id="task" ${s.task.big ? 'style="min-height:180px"' : ""}>${esc(state.answers[i] || "")}</textarea>
+      <p class="small" id="taskfb"></p></div>`;
+  }
+  html += `<div class="card check"><span class="tag">בדיקה</span><div id="qs"></div></div>
+    <button class="primary" id="next" disabled>${i === STEPS.length - 1 ? "סיימתי את המסלול" : "המשיכו לצעד " + (i + 2)}</button>
+    ${i > 0 ? `<button class="ghost" id="back" style="margin-top:8px;width:100%">חזרה לצעד ${i}</button>` : ""}`;
+  app.innerHTML = html;
+
+  const qs = document.getElementById("qs");
+  s.check.forEach((q, qi) => qs.appendChild(buildQ(i, q, qi)));
+
+  if (s.task) {
+    const ta = document.getElementById("task");
+    ta.oninput = () => { state.answers[i] = ta.value; save(); updateNext(); };
+  }
+  document.getElementById("next").onclick = () => {
+    addTime();
+    if (i < STEPS.length - 1) { state.step++; } else { state.screen = "challenge"; }
+    render();
+  };
+  const back = document.getElementById("back");
+  if (back) back.onclick = () => { addTime(); state.step--; render(); };
+  updateNext();
+}
+
+function key(i, qi) { return i + "." + qi; }
+
+function updateNext() {
+  const i = state.step, s = STEPS[i];
+  const allSolved = s.check.every((q, qi) => state.solved[key(i, qi)]);
+  let taskOk = true;
+  if (s.task) {
+    const len = (state.answers[i] || "").trim().length;
+    taskOk = len >= s.task.min;
+    const fb = document.getElementById("taskfb");
+    fb.textContent = taskOk ? "✓ המשימה מוכנה." : "כתבו עוד קצת כדי להמשיך.";
+  }
+  const btn = document.getElementById("next");
+  btn.disabled = !(allSolved && taskOk);
+}
+
+function buildQ(i, q, qi) {
+  const k = key(i, qi);
+  const box = document.createElement("div");
+  box.className = "q";
+  box.innerHTML = `<div class="qt">${esc(q.q)}</div>`;
+  const fb = document.createElement("div");
+  fb.className = "fb";
+  fb.setAttribute("role", "status");
+
+  if (q.type === "mcq") {
+    const opts = document.createElement("div");
+    opts.className = "opts";
+    q.options.forEach((o, oi) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = o;
+      if (state.solved[k] && oi === q.correct) b.classList.add("right");
+      b.onclick = () => {
+        if (state.solved[k]) return;
+        state.attempts[k] = (state.attempts[k] || 0) + 1;
+        if (oi === q.correct) {
+          state.solved[k] = true; b.classList.add("right");
+          fb.className = "fb ok"; fb.textContent = "✓ נכון!";
+        } else {
+          b.classList.add("wrong");
+          fb.className = "fb bad"; fb.textContent = "עוד לא. רמז: " + q.hint;
+        }
+        save(); updateNext();
+      };
+      opts.appendChild(b);
+    });
+    box.appendChild(opts);
+    if (state.solved[k]) { fb.className = "fb ok"; fb.textContent = "✓ נכון!"; }
+  }
+
+  if (q.type === "order") {
+    const shuffled = q.items.map((t, idx) => idx).sort(() => Math.random() - 0.5);
+    let picked = [];
+    const pickedBox = document.createElement("div"); pickedBox.className = "order-picked";
+    const pool = document.createElement("div"); pool.className = "order-pool";
+    const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "נקו ונסו שוב";
+    reset.style.marginTop = "8px";
+    function draw() {
+      pickedBox.innerHTML = picked.length
+        ? picked.map((idx, n) => `<div><span class="num">${n + 1}.</span>${esc(q.items[idx])}${state.solved[k] ? ` <span class="small">(${q.years[idx]})</span>` : ""}</div>`).join("")
+        : `<span class="small">האירועים שתבחרו יופיעו כאן, לפי הסדר.</span>`;
+      pool.innerHTML = "";
+      shuffled.filter(idx => !picked.includes(idx)).forEach(idx => {
+        const b = document.createElement("button"); b.type = "button"; b.textContent = q.items[idx];
+        b.style.textAlign = "start"; b.style.borderColor = "var(--line)";
+        b.onclick = () => { picked.push(idx); if (picked.length === q.items.length) judge(); draw(); };
+        pool.appendChild(b);
+      });
+      reset.classList.toggle("hidden", !!state.solved[k]);
+    }
+    function judge() {
+      state.attempts[k] = (state.attempts[k] || 0) + 1;
+      if (picked.every((idx, n) => idx === n)) {
+        state.solved[k] = true; fb.className = "fb ok"; fb.textContent = "✓ מצוין! זה הסדר הנכון.";
+      } else {
+        fb.className = "fb bad"; fb.textContent = "הסדר עוד לא נכון. רמז: " + q.hint + " לחצו \"נקו ונסו שוב\".";
+      }
+      save(); updateNext();
+    }
+    reset.onclick = () => { picked = []; fb.textContent = ""; draw(); };
+    if (state.solved[k]) { picked = q.items.map((t, idx) => idx); fb.className = "fb ok"; fb.textContent = "✓ מצוין! זה הסדר הנכון."; }
+    box.append(pickedBox, pool, reset);
+    draw();
+  }
+
+  if (q.type === "selfcheck") {
+    const list = document.createElement("div"); list.className = "checklist";
+    const marks = state.answers[k] || q.items.map(() => false);
+    q.items.forEach((t, ti) => {
+      const id = "sc" + ti;
+      const l = document.createElement("label");
+      l.innerHTML = `<input type="checkbox" id="${id}" ${marks[ti] ? "checked" : ""}> ${esc(t)}`;
+      l.querySelector("input").onchange = e => {
+        marks[ti] = e.target.checked; state.answers[k] = marks;
+        state.solved[k] = marks.every(Boolean); save(); updateNext();
+      };
+      list.appendChild(l);
+    });
+    box.appendChild(list);
+  }
+
+  box.appendChild(fb);
+  return box;
+}
+
+function renderChallenges() {
+  header("כל הכבוד! סיימתם את 6 הצעדים", 1);
+  app.innerHTML = `<h1>סיימתם את המסלול 🎉</h1>
+    <div class="card task"><span class="tag">אתגר (לא חובה)</span>
+      <p>נשאר לכם זמן? נסו אתגר אחד או שניים. אם אין זמן, עברו ישר לשליחה.</p></div>
+    ${CHALLENGES.map((c, ci) => `<div class="card task"><span class="tag">${esc(c.title)}</span>
+      <label class="lbl" for="ch${ci}">${esc(c.prompt)}</label>
+      <textarea id="ch${ci}">${esc(state.challenges[ci] || "")}</textarea></div>`).join("")}
+    <button class="primary" id="tofinish">עברו לשליחת העבודה לאסף</button>`;
+  CHALLENGES.forEach((c, ci) => {
+    const ta = document.getElementById("ch" + ci);
+    ta.oninput = () => { state.challenges[ci] = ta.value; save(); };
+  });
+  document.getElementById("tofinish").onclick = () => { state.screen = "finish"; render(); };
+}
+
+function summary() {
+  const lines = ["העבודה שלי: העולם משתנה, ותל אביב-יפו איתו", ""];
+  let totalAttempts = 0, totalQs = 0, totalTime = 0;
+  STEPS.forEach((s, i) => {
+    const t = state.times[i] || 0; totalTime += t;
+    const att = s.check.filter(q => q.type !== "selfcheck").map((q, qi) => state.attempts[key(i, qi)] || 0);
+    totalAttempts += att.reduce((a, b) => a + b, 0); totalQs += att.length;
+    lines.push(`צעד ${i + 1} – ${s.title} (${Math.max(1, Math.round(t / 60))} דק', ניסיונות בבדיקה: ${att.join(", ") || "-"})`);
+    if (s.task && state.answers[i]) lines.push("תשובה: " + state.answers[i].trim());
+    lines.push("");
+  });
+  CHALLENGES.forEach((c, ci) => {
+    if ((state.challenges[ci] || "").trim()) { lines.push(c.title + ":", state.challenges[ci].trim(), ""); }
+  });
+  lines.push(`סה"כ: ${Math.round(totalTime / 60)} דקות, ${totalAttempts} ניסיונות ל-${totalQs} שאלות.`);
+  return lines.join("\n");
+}
+
+function renderFinish() {
+  header("שליחה לאסף", 1);
+  const text = summary();
+  const url = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(TEACHER_EMAIL) +
+    "&su=" + encodeURIComponent("גיאוגרפיה ז6 – העולם משתנה") + "&body=" + encodeURIComponent(text);
+  app.innerHTML = `<h1>שלחו לאסף את העבודה</h1>
+    <div class="card task"><span class="tag">שלב אחרון</span>
+      <p>1. לחצו על הכפתור. ייפתח מייל מוכן בחשבון Gmail של בית הספר.</p>
+      <p>2. בדקו שהמייל נשלח מהחשבון שלכם, ולחצו "שליחה".</p>
+      <a class="linkbtn" href="${url}" target="_blank" rel="noopener">פתחו מייל מוכן לאסף</a>
+      <p class="small" style="margin-top:10px">המייל לא נפתח? לחצו "העתיקו", פתחו Gmail, והדביקו במייל חדש אל ${TEACHER_EMAIL}.</p>
+      <div class="row"><button type="button" id="copy">העתיקו את העבודה</button></div>
+      <p class="fb" id="copyfb" role="status"></p>
+    </div>
+    <div class="card explain"><span class="tag">מה נשלח</span><pre class="summary">${esc(text)}</pre></div>
+    <div class="card"><p class="small">אחרי ששלחתם: לחצו כאן כדי לנקות את העבודה מהמחשב, בשביל התלמיד הבא.</p>
+      <button class="ghost" id="clear" type="button">שלחתי. נקו את המחשב</button></div>
+    <button class="ghost" id="backch" type="button" style="width:100%;margin-top:8px">חזרה לאתגרים</button>`;
+  document.getElementById("copy").onclick = async () => {
+    const fb = document.getElementById("copyfb");
+    try { await navigator.clipboard.writeText(text); fb.className = "fb ok"; fb.textContent = "✓ הועתק. עכשיו הדביקו במייל."; }
+    catch (e) { fb.className = "fb bad"; fb.textContent = "ההעתקה לא עבדה. סמנו את הטקסט בתיבה \"מה נשלח\" והעתיקו ידנית (Ctrl+C)."; }
+  };
+  document.getElementById("clear").onclick = () => {
+    if (confirm("למחוק את העבודה מהמחשב הזה? ודאו שהמייל נשלח.")) { state = fresh(); try { localStorage.removeItem(STORE_KEY); } catch (e) {} render(); }
+  };
+  document.getElementById("backch").onclick = () => { state.screen = "challenge"; render(); };
+}
+
+render();
+</script>
+</body>
+</html>

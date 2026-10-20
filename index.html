@@ -61,7 +61,7 @@
   .row button { flex: 1 1 200px; }
   .small { font-size: 15px; color: var(--muted); }
   .hidden { display: none; }
-  .topnav { display: flex; gap: 8px; margin-top: 8px; }
+  .topnav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .topnav .mini { min-height: 44px; padding: 6px 12px; font-size: 15px; border-color: var(--line); color: var(--muted); }
   .card.game { border-inline-start-color: #c2410c; }
   .game .tag { background: #fff1e6; color: #9a3412; }
@@ -78,6 +78,7 @@
     <nav class="topnav" aria-label="ניווט">
       <button type="button" class="mini" id="navhome">⌂ עמוד ראשון</button>
       <button type="button" class="mini" id="navreload">↻ רענון הדף</button>
+      <button type="button" class="mini" id="navsend">✉ שלחו לאסף את מה שעשיתם</button>
     </nav>
   </header>
   <div id="app" aria-live="polite"></div>
@@ -241,6 +242,12 @@ function render() {
 
 document.getElementById("navhome").onclick = () => { addTime(); state.screen = "start"; render(); };
 document.getElementById("navreload").onclick = () => { addTime(); save(); location.reload(); };
+document.getElementById("navsend").onclick = () => {
+  if (!state.started) { alert("עוד לא התחלתם לעבוד. לחצו \"התחילו את הצעד הראשון\"."); return; }
+  addTime(); save();
+  const subject = isDone() ? "גיאוגרפיה ז6 – העולם משתנה" : `גיאוגרפיה ז6 – עבודה חלקית (צעד ${state.step + 1} מתוך ${STEPS.length})`;
+  window.open(gmailUrl(subject, summary()), "_blank", "noopener");
+};
 
 function renderExit() {
   header("יצאתם מהמסלול", 0);
@@ -504,10 +511,21 @@ function renderChallenges() {
   document.getElementById("tofinish").onclick = () => { state.screen = "finish"; render(); };
 }
 
+function isDone() { return state.screen === "challenge" || state.screen === "finish" || state.step >= STEPS.length; }
+
+function gmailUrl(subject, text) {
+  return "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(TEACHER_EMAIL) +
+    "&su=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(text);
+}
+
 function summary() {
-  const lines = ["העבודה שלי: העולם משתנה, ותל אביב-יפו איתו", ""];
+  const partial = !isDone();
+  const lines = [partial
+    ? `עבודה חלקית: הגעתי לצעד ${state.step + 1} מתוך ${STEPS.length}. (העולם משתנה, ותל אביב-יפו איתו)`
+    : "העבודה שלי: העולם משתנה, ותל אביב-יפו איתו", ""];
   let totalAttempts = 0, totalQs = 0, totalTime = 0;
   STEPS.forEach((s, i) => {
+    if (partial && i > state.step) return;
     const t = state.times[i] || 0; totalTime += t;
     const att = s.check.filter(q => q.type !== "selfcheck").map((q, qi) => state.attempts[key(i, qi)] || 0);
     totalAttempts += att.reduce((a, b) => a + b, 0); totalQs += att.length;
@@ -530,8 +548,7 @@ function summary() {
 function renderFinish() {
   header("שליחה לאסף", 1);
   const text = summary();
-  const url = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(TEACHER_EMAIL) +
-    "&su=" + encodeURIComponent("גיאוגרפיה ז6 – העולם משתנה") + "&body=" + encodeURIComponent(text);
+  const url = gmailUrl("גיאוגרפיה ז6 – העולם משתנה", text);
   app.innerHTML = `<h1>שלחו לאסף את העבודה</h1>
     <div class="card task"><span class="tag">שלב אחרון</span>
       <p>1. לחצו על הכפתור. ייפתח מייל מוכן בחשבון Gmail של בית הספר.</p>

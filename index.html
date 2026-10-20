@@ -79,6 +79,7 @@
       <button type="button" class="mini" id="navhome">⌂ עמוד ראשון</button>
       <button type="button" class="mini" id="navreload">↻ רענון הדף</button>
       <button type="button" class="mini" id="navsend">✉ שלחו לאסף את מה שעשיתם</button>
+      <button type="button" class="mini" id="navsum">📋 סיכום העבודה (לוואטסאפ)</button>
     </nav>
   </header>
   <div id="app" aria-live="polite"></div>
@@ -238,6 +239,37 @@ function render() {
   if (state.screen === "challenge") return renderChallenges();
   if (state.screen === "finish") return renderFinish();
   if (state.screen === "exit") return renderExit();
+  if (state.screen === "summary") return renderSummary();
+}
+
+document.getElementById("navsum").onclick = () => {
+  if (!state.started) { alert("עוד לא התחלתם לעבוד. לחצו \"התחילו את הצעד הראשון\"."); return; }
+  if (state.screen === "summary") return;
+  addTime(); state.prevScreen = state.screen; state.screen = "summary"; render();
+};
+
+function renderSummary() {
+  header("סיכום העבודה", isDone() ? 1 : state.step / STEPS.length);
+  const text = summary();
+  app.innerHTML = `<h1>סיכום העבודה שלכם</h1>
+    <div class="card task"><span class="tag">שליחה בוואטסאפ</span>
+      <p>1. לחצו "שלחו בוואטסאפ" ובחרו למי לשלוח (לאסף או לקבוצת הכיתה, לפי מה שאסף ביקש).</p>
+      <p>2. לא נפתח וואטסאפ? לחצו "העתיקו", פתחו וואטסאפ והדביקו בהודעה.</p>
+      <a class="linkbtn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">שלחו בוואטסאפ</a>
+      <div class="row" style="margin-top:8px"><button type="button" id="sumcopy">העתיקו את הסיכום</button></div>
+      <p class="fb" id="sumfb" role="status"></p>
+    </div>
+    <div class="card explain"><span class="tag">הסיכום</span><pre class="summary">${esc(text)}</pre></div>
+    <button class="ghost" id="sumback" type="button" style="width:100%">חזרה לעבודה</button>`;
+  document.getElementById("sumcopy").onclick = async () => {
+    const fb = document.getElementById("sumfb");
+    try { await navigator.clipboard.writeText(text); fb.className = "fb ok"; fb.textContent = "✓ הועתק. עכשיו הדביקו בוואטסאפ."; }
+    catch (e) { fb.className = "fb bad"; fb.textContent = "ההעתקה לא עבדה. סמנו את הטקסט בתיבה \"הסיכום\" והעתיקו ידנית."; }
+  };
+  document.getElementById("sumback").onclick = () => {
+    state.screen = state.prevScreen && state.prevScreen !== "summary" ? state.prevScreen : "step";
+    stepStart = Date.now(); render();
+  };
 }
 
 document.getElementById("navhome").onclick = () => { addTime(); state.screen = "start"; render(); };
@@ -511,7 +543,10 @@ function renderChallenges() {
   document.getElementById("tofinish").onclick = () => { state.screen = "finish"; render(); };
 }
 
-function isDone() { return state.screen === "challenge" || state.screen === "finish" || state.step >= STEPS.length; }
+function isDone() {
+  const scr = state.screen === "summary" ? state.prevScreen : state.screen;
+  return scr === "challenge" || scr === "finish" || state.step >= STEPS.length;
+}
 
 function gmailUrl(subject, text) {
   return "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(TEACHER_EMAIL) +
